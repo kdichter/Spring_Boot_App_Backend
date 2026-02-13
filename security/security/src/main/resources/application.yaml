@@ -11,6 +11,17 @@ spring:
       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+servlet:
+  multipart:
+    enabled: true
+    max-file-size: 100MB
+    max-request-size: 100MB
+server:
+  port: 8080
+  error:
+    path: /user/error
+    whitelabel:
+      enabled: false
 jwt:
   # Use JWT_SECRET env var if it exists, otherwise use the default value after the colon
   secret: ${JWT_SECRET:OVq1+rTLMPmYFmPKNJ9z7qvm6XtQCx2FuaIx773Onpc=}
