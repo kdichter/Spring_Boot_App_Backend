@@ -4,7 +4,9 @@ import com.kdichter.security.contact.Contact;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static com.kdichter.security.constant.Constant.PHOTO_DIRECTORY;
@@ -42,14 +45,22 @@ public class ContactController {
         return ResponseEntity.created(location).body(saved);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Contact> updateContact(@PathVariable String id,
+                                                 @RequestBody Contact contact) {
+        Contact updated = contactService.updateContact(id, contact);
+        return ResponseEntity.ok(updated);
+    }
+
     @GetMapping
     public ResponseEntity<Page<Contact>> getContacts(@RequestParam(value = "page", defaultValue = "0") int page,
                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
-        return ResponseEntity.ok(contactService.getAllContacts(page, size));
+        Page<Contact> contacts = contactService.getAllContacts(page, size);
+        return ResponseEntity.ok(contacts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Contact> getContacts(@PathVariable(value = "id") String id) {
+    public ResponseEntity<Contact> getContact(@PathVariable(value = "id") String id) {
         return ResponseEntity.ok(contactService.getContact(id));
     }
 
@@ -60,8 +71,25 @@ public class ContactController {
     }
 
     @GetMapping(path = "image/{filename}")
-    public byte[] getPhoto(@PathVariable("filename") String filename) throws IOException {
-        return Files.readAllBytes(Paths.get(PHOTO_DIRECTORY + filename));
+    public ResponseEntity<byte[]> getPhoto(@PathVariable("filename") String filename) throws IOException {
+        Path path = Paths.get(PHOTO_DIRECTORY + filename);
+        if (!Files.exists(path)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String contentType = Files.probeContentType(path);
+        byte[] bytes = Files.readAllBytes(path);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(bytes);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContact(@PathVariable String id) {
+        contactService.deleteContact(id);
+        return ResponseEntity.noContent().build();
     }
 
 

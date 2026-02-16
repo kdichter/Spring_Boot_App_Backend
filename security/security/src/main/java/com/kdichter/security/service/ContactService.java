@@ -2,6 +2,8 @@ package com.kdichter.security.service;
 
 import com.kdichter.security.contact.Contact;
 import com.kdichter.security.contact.ContactRepository;
+import com.kdichter.security.user.User;
+import com.kdichter.security.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,21 +35,52 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @RequiredArgsConstructor
 public class ContactService {
     private final ContactRepository contactRepository;
+    private final UserRepository userRepository;
+
+    // Get the currently logging-in user from JWT token
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    }
 
     public Page<Contact> getAllContacts(int page, int size) {
-        return contactRepository.findAll(PageRequest.of(page, size, Sort.by("name")));
+        User currentUser = getCurrentUser();
+        return contactRepository.findByUser(currentUser, PageRequest.of(page, size, Sort.by("name")));
     }
 
     public Contact getContact(String id) {
-        return contactRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found"));
+        User currentUser = getCurrentUser();
+        return contactRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found or access denied"));
     }
 
     public Contact createContact(Contact contact) {
+        User currentUser = getCurrentUser();
+        contact.setUser(currentUser); // Associate with current user
         return contactRepository.save(contact);
     }
 
-    public void deleteContact(Contact contact) {
+    public Contact updateContact(String id, Contact contact) {
+        User currentUser = getCurrentUser();
+        Contact existingContact = contactRepository
+                .findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found or access denied"));
+
+        existingContact.setName(contact.getName());
+        existingContact.setEmail(contact.getEmail());
+        existingContact.setTitle(contact.getTitle());
+        existingContact.setPhone(contact.getPhone());
+        existingContact.setAddress(contact.getAddress());
+
+        return contactRepository.save(existingContact);
+    }
+
+    public void deleteContact(String id) {
+        User currentUser = getCurrentUser();
+        Contact contact = contactRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found or access denied"));
         contactRepository.delete(contact);
     }
 
