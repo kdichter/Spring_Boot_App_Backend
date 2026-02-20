@@ -33,7 +33,14 @@ public class ContactController {
 
     private final ContactService contactService;
 
-    @PostMapping("/create")
+    @GetMapping
+    public ResponseEntity<Page<Contact>> getContacts(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<Contact> contacts = contactService.getAllContacts(page, size);
+        return ResponseEntity.ok(contacts);
+    }
+
+    @PostMapping
     public ResponseEntity<Contact> createContact(@Valid @RequestBody Contact contact) {
         Contact saved = contactService.createContact(contact);
         URI location = ServletUriComponentsBuilder
@@ -52,11 +59,10 @@ public class ContactController {
         return ResponseEntity.ok(updated);
     }
 
-    @GetMapping
-    public ResponseEntity<Page<Contact>> getContacts(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
-        Page<Contact> contacts = contactService.getAllContacts(page, size);
-        return ResponseEntity.ok(contacts);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContact(@PathVariable String id) {
+        contactService.deleteContact(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
@@ -85,12 +91,4 @@ public class ContactController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(bytes);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteContact(@PathVariable String id) {
-        contactService.deleteContact(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
 }
