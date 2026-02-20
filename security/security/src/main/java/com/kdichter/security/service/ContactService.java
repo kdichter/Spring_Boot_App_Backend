@@ -73,6 +73,7 @@ public class ContactService {
         existingContact.setTitle(contact.getTitle());
         existingContact.setPhone(contact.getPhone());
         existingContact.setAddress(contact.getAddress());
+        existingContact.setStatus(contact.getStatus());
 
         return contactRepository.save(existingContact);
     }
@@ -142,8 +143,8 @@ public class ContactService {
             // 4. Build and return the URL
             return ServletUriComponentsBuilder
                     .fromCurrentContextPath()
-                    .path("/contacts/image/" + filename)
-                    .toString();
+                    .path("/api/v1/contacts/image/" + filename)
+                    .toUriString();
 
         } catch (Exception exception) {
             throw new RuntimeException("Unable to save image");
