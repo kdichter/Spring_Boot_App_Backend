@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  frontend:
+    image: kevindichter/myapp-frontend:latest
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
+
+  app:
+    image: kevindichter/myapp-backend:latest
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/security
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345
+      JWT_SECRET: ${JWT_SECRET:-OVq1+rTLMPmYFmPKNJ9z7qvm6XtQCx2FuaIx773Onpc=}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-3600000}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: security
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d security" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
