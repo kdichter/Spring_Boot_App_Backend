@@ -13,7 +13,10 @@ services:
     image: kevindichter/myapp-backend:latest
     ports:
       - "8080:8080"
+    volumes:
+      - uploads_data:/app/uploads
     environment:
+      UPLOAD_DIR: /app/uploads
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/security
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 12345
@@ -41,3 +44,4 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:
