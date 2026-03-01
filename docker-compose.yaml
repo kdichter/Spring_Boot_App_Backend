@@ -14,12 +14,17 @@ services:
     volumes:
       - uploads_data:/app/uploads
     environment:
-      UPLOAD_DIR: /app/uploads/
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/security
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 12345
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-12345}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SERVLET_MULTIPART_ENABLED: true
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 104857600
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 104857600
       JWT_SECRET: ${JWT_SECRET:-OVq1+rTLMPmYFmPKNJ9z7qvm6XtQCx2FuaIx773Onpc=}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-3600000}
+      WEB_URL: http://localhost:3000
+      UPLOAD_DIR: /app/uploads/
     depends_on:
       db:
         condition: service_healthy

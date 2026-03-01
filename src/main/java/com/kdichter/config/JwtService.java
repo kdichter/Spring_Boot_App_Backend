@@ -25,14 +25,6 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    @PostConstruct
-    public void init() {
-        System.out.println("=================================");
-        System.out.println("JWT Secret loaded: " + SECRET_KEY);  // ✅ SECRET_KEY is injected now!
-        System.out.println("JWT Expiration: " + jwtExpiration);
-        System.out.println("=================================");
-    }
-
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
