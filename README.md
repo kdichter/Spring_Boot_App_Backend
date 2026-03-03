@@ -1,6 +1,6 @@
 # Spring_Boot_App_Backend
 
-This is a containerized Spring Boot application managed with Docker Compose.
+This is a containerized Spring Boot application managed with Docker Compose.  
 Follow the steps below to run the application locally.
 
 ## Prerequisites
@@ -27,3 +27,7 @@ Follow the steps below to run the application locally.
    ```
    docker compose down -v
    ```
+## Acknowledgements
+
+- The contact aspect of this project was inspired by [GetArrays](https://github.com/getarrays/contactapi)  
+- The JWT authentication of this project was created by following a tutorial from [Ali-Bouali](https://github.com/ali-bouali/spring-boot-3-jwt-security)
