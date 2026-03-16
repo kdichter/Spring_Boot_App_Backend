@@ -1,11 +1,51 @@
-# Spring_Boot_App_Backend
+# Contact Management Application (Backend)
 
-This is a containerized Spring Boot application managed with Docker Compose.  
-Follow the steps below to run the application locally.
+A containerized full-stack contact management system built with **Spring Boot, React, and PostgreSQL**.
+
+The backend exposes a REST API for managing contacts and uses **JWT authentication** to secure endpoints.  
+The entire system is containerized using **Docker** and can be started locally with **Docker Compose**.
+
+---
+
+## Tech Stack
+
+**Backend**
+- Java
+- Spring Boot
+- Spring Security
+- JWT Authentication
+
+**Frontend**
+- React
+
+**Database**
+- PostgreSQL
+
+**Infrastructure**
+- Docker
+- Docker Compose
+
+**CI/CD**
+- GitHub Actions
+
+---
+
+## Features
+
+- Create, update, and delete contacts
+- Secure user authentication with JWT
+- RESTful API design
+- Persistent PostgreSQL database
+- Containerized deployment
+- Automated Docker builds using GitHub Actions
+
+---
 
 ## Prerequisites
 - Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - Ensure Docker Desktop is running
+
+---
 
 ## Running the Application
 
@@ -29,5 +69,5 @@ Follow the steps below to run the application locally.
    ```
 ## Acknowledgements
 
-- The contact aspect of this project was inspired by [GetArrays](https://github.com/getarrays/contactapi)  
-- The JWT authentication of this project was created by following a tutorial from [Ali-Bouali](https://github.com/ali-bouali/spring-boot-3-jwt-security)
+- The contact management functionality was inspired by the project from [GetArrays](https://github.com/getarrays/contactapi).
+- The JWT authentication implementation was developed by following a tutorial by [Ali-Bouali](https://github.com/ali-bouali/spring-boot-3-jwt-security).
